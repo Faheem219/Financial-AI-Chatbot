@@ -22,9 +22,15 @@ async def signup(user: UserCreate, db = Depends(get_database)):
         id=str(result.inserted_id),
         email=user.email,
         username=user.username,
-        hashed_password=hashed_password
+        income=user.income,
+        expenses=user.expenses,
+        investment_goals=user.investment_goals,
+        risk_tolerance=user.risk_tolerance,
+        hashed_password=hashed_password,
+        chat_history=[]
     )
     return User(id=created_user.id, email=created_user.email, username=created_user.username)
+
 
 @router.post("/login")
 async def login(form_data: OAuth2PasswordRequestForm = Depends(), db = Depends(get_database)):

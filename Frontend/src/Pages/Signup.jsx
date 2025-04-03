@@ -8,6 +8,10 @@ const Signup = () => {
     const [email, setEmail] = useState('');
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [income, setIncome] = useState('');
+    const [expenses, setExpenses] = useState('');
+    const [investmentGoals, setInvestmentGoals] = useState('');
+    const [riskTolerance, setRiskTolerance] = useState('medium');  // default to "medium"
     const { login } = useContext(AuthContext);
     const [error, setError] = useState(null);
     const navigate = useNavigate();
@@ -15,9 +19,16 @@ const Signup = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const data = await signupUser({ email, username, password });
+            const data = await signupUser({
+                email,
+                username,
+                password,
+                income: parseFloat(income),  // Ensure the data type is correct
+                expenses: parseFloat(expenses),
+                investment_goals: investmentGoals,
+                risk_tolerance: riskTolerance,
+            });
             // After successful signup, auto-login the user if desired.
-            // Adjust token handling if your backend returns a token.
             login({ email: data.email, username: data.username }, data.access_token || '');
             navigate('/dashboard');
         } catch (err) {
@@ -51,7 +62,7 @@ const Signup = () => {
                             className="w-full p-2 border rounded"
                         />
                     </div>
-                    <div className="mb-6">
+                    <div className="mb-4">
                         <label className="block text-gray-700">Password</label>
                         <input
                             type="password"
@@ -60,6 +71,47 @@ const Signup = () => {
                             required
                             className="w-full p-2 border rounded"
                         />
+                    </div>
+                    <div className="mb-4">
+                        <label className="block text-gray-700">Income</label>
+                        <input
+                            type="number"
+                            value={income}
+                            onChange={(e) => setIncome(e.target.value)}
+                            required
+                            className="w-full p-2 border rounded"
+                        />
+                    </div>
+                    <div className="mb-4">
+                        <label className="block text-gray-700">Expenses</label>
+                        <input
+                            type="number"
+                            value={expenses}
+                            onChange={(e) => setExpenses(e.target.value)}
+                            required
+                            className="w-full p-2 border rounded"
+                        />
+                    </div>
+                    <div className="mb-4">
+                        <label className="block text-gray-700">Investment Goals</label>
+                        <textarea
+                            value={investmentGoals}
+                            onChange={(e) => setInvestmentGoals(e.target.value)}
+                            required
+                            className="w-full p-2 border rounded"
+                        />
+                    </div>
+                    <div className="mb-4">
+                        <label className="block text-gray-700">Risk Tolerance</label>
+                        <select
+                            value={riskTolerance}
+                            onChange={(e) => setRiskTolerance(e.target.value)}
+                            className="w-full p-2 border rounded"
+                        >
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                        </select>
                     </div>
                     <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600">
                         Sign Up

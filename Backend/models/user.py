@@ -6,7 +6,13 @@ class UserBase(BaseModel):
     username: str
 
 class UserCreate(UserBase):
+    email: EmailStr
+    username: str
     password: str
+    income: float
+    expenses: float
+    investment_goals: str
+    risk_tolerance: str = "medium"
 
 class UserInDB(UserBase):
     id: str
