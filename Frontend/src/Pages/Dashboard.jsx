@@ -54,18 +54,27 @@ const Dashboard = () => {
         </div>
       </header>
 
-      {/* Main Content */}
+      {/* main section */}
       <main className="container mx-auto">
         <h2 className="text-xl font-semibold mb-4">Your Financial Data</h2>
         <p>
           Here you can view your personalized financial information, investment insights, and more.
         </p>
-        <div className="mt-6">
+
+        <div className="mt-6 flex space-x-4">
           <Link
             to="/chatbot"
             className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
           >
             Go to Chatbot
+          </Link>
+
+          {/* New link to edit details */}
+          <Link
+            to="/edit-details"
+            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition-colors"
+          >
+            Edit Details
           </Link>
         </div>
       </main>

@@ -73,3 +73,24 @@ export async function getMarketData(symbol) {
     }
     return response.json();
 }
+
+// NEW: Update user details
+export async function updateUserDetails(income, expenses, investment_goals, risk_tolerance, token) {
+    const response = await fetch(`${API_BASE_URL}/user/update`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+            income,
+            expenses,
+            investment_goals,
+            risk_tolerance,
+        }),
+    });
+    if (!response.ok) {
+        throw new Error('Failed to update user details');
+    }
+    return response.json();
+}
