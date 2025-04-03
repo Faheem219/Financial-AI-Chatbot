@@ -11,7 +11,7 @@ const Signup = () => {
     const [income, setIncome] = useState('');
     const [expenses, setExpenses] = useState('');
     const [investmentGoals, setInvestmentGoals] = useState('');
-    const [riskTolerance, setRiskTolerance] = useState('medium'); // Default value
+    const [riskTolerance, setRiskTolerance] = useState('medium');  // default to "medium"
     const { login } = useContext(AuthContext);
     const [error, setError] = useState(null);
     const navigate = useNavigate();
@@ -23,11 +23,12 @@ const Signup = () => {
                 email,
                 username,
                 password,
-                income: parseFloat(income),
+                income: parseFloat(income),  // Ensure the data type is correct
                 expenses: parseFloat(expenses),
                 investment_goals: investmentGoals,
                 risk_tolerance: riskTolerance,
             });
+            // After successful signup, auto-login the user if desired.
             login({ email: data.email, username: data.username }, data.access_token || '');
             navigate('/dashboard');
         } catch (err) {
@@ -37,7 +38,7 @@ const Signup = () => {
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-100">
-            <div className="w-[600px] w-full h-lg bg-white p-8 shadow-md rounded">
+            <div className="max-w-md w-full bg-white p-8 shadow-md rounded">
                 <h2 className="text-2xl font-bold mb-6">Sign Up</h2>
                 {error && <p className="text-red-500 mb-4">{error}</p>}
                 <form onSubmit={handleSubmit}>
@@ -61,7 +62,7 @@ const Signup = () => {
                             className="w-full p-2 border rounded"
                         />
                     </div>
-                    <div className="mb-6">
+                    <div className="mb-4">
                         <label className="block text-gray-700">Password</label>
                         <input
                             type="password"
@@ -71,8 +72,6 @@ const Signup = () => {
                             className="w-full p-2 border rounded"
                         />
                     </div>
-
-                    {/* New fields */}
                     <div className="mb-4">
                         <label className="block text-gray-700">Income</label>
                         <input
@@ -114,7 +113,6 @@ const Signup = () => {
                             <option value="high">High</option>
                         </select>
                     </div>
-
                     <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600">
                         Sign Up
                     </button>

@@ -1,27 +1,24 @@
-# /models/user.py
-from pydantic import BaseModel
-from typing import Optional
+from pydantic import BaseModel, EmailStr
+from typing import List, Tuple
 
 class UserBase(BaseModel):
-    email: str
+    email: EmailStr
     username: str
 
 class UserCreate(UserBase):
+    email: EmailStr
+    username: str
     password: str
     income: float
     expenses: float
     investment_goals: str
-    risk_tolerance: Optional[str] = "medium"
+    risk_tolerance: str = "medium"
 
 class UserInDB(UserBase):
     id: str
     hashed_password: str
-    user_id: str
-    income: float
-    expenses: float
-    investment_goals: str
-    risk_tolerance: str
+    chat_history: List[Tuple[str, str]]  # Add chat history here (list of tuples with prompt and response)
 
 class User(UserBase):
     id: str
-    user_id: str
+    chat_history: List[Tuple[str, str]]  # Add chat history here too
