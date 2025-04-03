@@ -44,6 +44,7 @@ async def signup(user: UserCreate, db = Depends(get_database)):
         chat_history=created_user.chat_history
     )
 
+# /api/auth.py
 @router.post("/login")
 async def login(form_data: OAuth2PasswordRequestForm = Depends(), db = Depends(get_database)):
     user_collection = db.users
@@ -52,9 +53,28 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db = Depends(g
         raise HTTPException(status_code=400, detail="Invalid credentials")
     if not verify_password(form_data.password, user_data["hashed_password"]):
         raise HTTPException(status_code=400, detail="Invalid credentials")
+    
+    # Create token
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data={"sub": user_data["email"]},
         expires_delta=access_token_expires
     )
-    return {"access_token": access_token, "token_type": "bearer"}
+
+    # Include user object in the response
+    user_dict = {
+        "id": str(user_data["_id"]),
+        "email": user_data["email"],
+        "username": user_data["username"],
+        "income": user_data["income"],
+        "expenses": user_data["expenses"],
+        "investment_goals": user_data["investment_goals"],
+        "risk_tolerance": user_data["risk_tolerance"],
+        "chat_history": user_data.get("chat_history", [])
+    }
+
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "user": user_dict
+    }

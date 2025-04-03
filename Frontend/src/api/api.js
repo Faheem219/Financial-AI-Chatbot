@@ -1,4 +1,5 @@
 // /src/api/api.js
+
 const API_BASE_URL = 'http://127.0.0.1:8000/api';
 
 export async function loginUser({ email, password }) {
@@ -9,13 +10,14 @@ export async function loginUser({ email, password }) {
         },
         body: new URLSearchParams({
             username: email,
-            password: password,
+            password,
         }),
     });
     if (!response.ok) {
         throw new Error('Login failed');
     }
-    return response.json();
+    const data = await response.json();
+    return data;
 }
 
 export async function signupUser({ email, username, password, income, expenses, investment_goals, risk_tolerance }) {
@@ -50,6 +52,7 @@ export async function getChatbotResponse(prompt, token) {
 export async function uploadPdf(file, token) {
     const formData = new FormData();
     formData.append('file', file);
+
     const response = await fetch(`${API_BASE_URL}/chatbot/upload-pdf`, {
         method: 'POST',
         headers: {

@@ -14,8 +14,15 @@ const Login = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
+            // 'loginUser' should return something like: 
+            // { access_token, token_type, user: { ... } }
             const data = await loginUser({ email, password });
-            login({ email: data.email, username: data.username }, data.access_token);
+
+            // Instead of calling:
+            //    login({ email: data.email, username: data.username }, data.access_token);
+            // We need the full 'user' object from the server's response:
+            login(data.user, data.access_token);
+
             navigate('/dashboard');
         } catch (err) {
             setError(err.message);
