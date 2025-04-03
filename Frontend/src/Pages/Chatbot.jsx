@@ -7,7 +7,7 @@ const Chatbot = () => {
   const [chatHistory, setChatHistory] = useState([]);
   const [loading, setLoading] = useState(false);
   const [pdfFile, setPdfFile] = useState(null);
-  const { user } = useContext(AuthContext); // Get user info from context
+  const { user, token } = useContext(AuthContext); // Also get token from context
 
   // Fetch chat history when the component mounts
   useEffect(() => {
@@ -16,7 +16,6 @@ const Chatbot = () => {
       try {
         // Pass the user's email along with an empty prompt to fetch chat history
         const response = await getChatbotResponse(user.email, "");
-        // The backend returns a list of arrays; if not, fallback to empty array.
         setChatHistory(response.history || []);
       } catch (err) {
         console.error("Failed to fetch chat history:", err);
@@ -33,7 +32,6 @@ const Chatbot = () => {
     try {
       // Pass the user's email and the prompt correctly to the API
       const response = await getChatbotResponse(user.email, prompt);
-      // Append the new entry as an object with keys.
       setChatHistory([...chatHistory, { prompt, response: response.result }]);
       setPrompt("");
     } catch (err) {
@@ -44,9 +42,9 @@ const Chatbot = () => {
 
   const handlePdfUpload = async (e) => {
     e.preventDefault();
-    if (!pdfFile) return;
+    if (!pdfFile || !user || !user.email) return;
     try {
-      await uploadPdf(pdfFile, ""); // Remove token if not needed here or pass correct token
+      await uploadPdf(pdfFile, user.email, token);
       alert("PDF uploaded and processed successfully.");
       setPdfFile(null);
     } catch (err) {
@@ -68,7 +66,6 @@ const Chatbot = () => {
               <p className="text-gray-500">No conversation yet.</p>
             ) : (
               chatHistory.map((chat, index) => {
-                // Determine if chat is an array (from backend) or object (newly added)
                 const promptText = Array.isArray(chat) ? chat[0] : chat.prompt;
                 const responseText = Array.isArray(chat) ? chat[1] : chat.response;
                 return (

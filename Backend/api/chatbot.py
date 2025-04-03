@@ -1,5 +1,5 @@
 # Backend/api/chatbot.py
-from fastapi import APIRouter, HTTPException, Depends, UploadFile, File
+from fastapi import APIRouter, HTTPException, Depends, UploadFile, File, Form
 from uuid import uuid4
 import shutil
 import os
@@ -56,19 +56,18 @@ async def chatbot_prompt(request: PromptRequest, db = Depends(get_database)):
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/upload-pdf")
-async def upload_pdf(file: UploadFile = File(...), email: str = None, db = Depends(get_database)):
-    """
-    For simplicity, pass the user's email as a query parameter or part of the form.
-    """
+async def upload_pdf(
+    file: UploadFile = File(...),
+    email: str = Form(...),  # Use Form(...) to get the email from the form data
+    db = Depends(get_database)
+):
     try:
-        if not email:
-            raise HTTPException(status_code=400, detail="Email is required for PDF upload")
         # Save the uploaded PDF temporarily.
         filename = f"temp_{uuid4().hex}.pdf"
         with open(filename, "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
         
-        # Process the PDF to update the vector database, including the DB data.
+        # Process the PDF to update the vector database.
         await process_document(filename, db)
         
         # Clean up the temporary file.

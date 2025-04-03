@@ -45,9 +45,10 @@ export async function getChatbotResponse(email, prompt) {
     return response.json();
 }
 
-export async function uploadPdf(file, token) {
+export async function uploadPdf(file, email, token) {
     const formData = new FormData();
     formData.append('file', file);
+    formData.append('email', email);  // Append the user's email
 
     const response = await fetch(`${API_BASE_URL}/chatbot/upload-pdf`, {
         method: 'POST',
