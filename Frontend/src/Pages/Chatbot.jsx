@@ -16,6 +16,7 @@ const Chatbot = () => {
       try {
         // Pass the user's email along with an empty prompt to fetch chat history
         const response = await getChatbotResponse(user.email, "");
+        // The backend returns a list of arrays; if not, fallback to empty array.
         setChatHistory(response.history || []);
       } catch (err) {
         console.error("Failed to fetch chat history:", err);
@@ -32,6 +33,7 @@ const Chatbot = () => {
     try {
       // Pass the user's email and the prompt correctly to the API
       const response = await getChatbotResponse(user.email, prompt);
+      // Append the new entry as an object with keys.
       setChatHistory([...chatHistory, { prompt, response: response.result }]);
       setPrompt("");
     } catch (err) {
@@ -65,16 +67,21 @@ const Chatbot = () => {
             {chatHistory.length === 0 ? (
               <p className="text-gray-500">No conversation yet.</p>
             ) : (
-              chatHistory.map((chat, index) => (
-                <div key={index} className="mb-4">
-                  <p>
-                    <strong>You:</strong> {chat.prompt}
-                  </p>
-                  <p>
-                    <strong>AI:</strong> {chat.response}
-                  </p>
-                </div>
-              ))
+              chatHistory.map((chat, index) => {
+                // Determine if chat is an array (from backend) or object (newly added)
+                const promptText = Array.isArray(chat) ? chat[0] : chat.prompt;
+                const responseText = Array.isArray(chat) ? chat[1] : chat.response;
+                return (
+                  <div key={index} className="mb-4">
+                    <p>
+                      <strong>You:</strong> {promptText}
+                    </p>
+                    <p>
+                      <strong>AI:</strong> {responseText}
+                    </p>
+                  </div>
+                );
+              })
             )}
           </div>
           <form onSubmit={handlePromptSubmit} className="flex">
