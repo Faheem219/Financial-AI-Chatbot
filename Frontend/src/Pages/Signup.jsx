@@ -16,8 +16,6 @@ const Signup = () => {
         e.preventDefault();
         try {
             const data = await signupUser({ email, username, password });
-            // After successful signup, auto-login the user if desired.
-            // Adjust token handling if your backend returns a token.
             login({ email: data.email, username: data.username }, data.access_token || '');
             navigate('/dashboard');
         } catch (err) {
