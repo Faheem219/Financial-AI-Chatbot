@@ -38,7 +38,7 @@ async def chatbot_prompt(request: PromptRequest, db = Depends(get_database)):
             return {"history": user.chat_history or []}
 
         # Process the prompt
-        response = await process_prompt(db, request.prompt)
+        response = await process_prompt(db, request.prompt, request.email)
         print("[DEBUG] chatbot_prompt: Received response:", response)
 
         chat_history = user.chat_history if user.chat_history else []
@@ -58,19 +58,15 @@ async def chatbot_prompt(request: PromptRequest, db = Depends(get_database)):
 @router.post("/upload-pdf")
 async def upload_pdf(
     file: UploadFile = File(...),
-    email: str = Form(...),  # Use Form(...) to get the email from the form data
+    email: str = Form(...),   # Ensure email is obtained from the form data
     db = Depends(get_database)
 ):
     try:
-        # Save the uploaded PDF temporarily.
         filename = f"temp_{uuid4().hex}.pdf"
         with open(filename, "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
-        
-        # Process the PDF to update the vector database.
-        await process_document(filename, db)
-        
-        # Clean up the temporary file.
+        # Pass the email to process_document so that the user's pdf docs are updated.
+        await process_document(filename, db, email)
         os.remove(filename)
         return {"detail": "PDF processed successfully"}
     except Exception as e:

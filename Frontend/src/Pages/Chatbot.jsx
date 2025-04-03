@@ -77,7 +77,7 @@ const Chatbot = () => {
         {/* Chatbot Section */}
         <div className="mb-6">
           <h2 className="text-2xl font-semibold text-gray-700 mb-4">Chat with our AI</h2>
-          <div className="h-96 overflow-y-auto p-4 border rounded-lg bg-gray-50 shadow-inner space-y-4">
+          <div className="max-h-[50vh] overflow-y-auto p-4 border rounded-lg bg-gray-50 shadow-inner space-y-4">
             {chatHistory.length === 0 ? (
               <p className="text-gray-500 text-center">No conversation yet.</p>
             ) : (
@@ -90,14 +90,14 @@ const Chatbot = () => {
                     <div className="flex justify-end mb-2">
                       <div className="bg-blue-100 text-blue-800 p-3 rounded-lg max-w-[80%]">
                         <strong className="block">You:</strong>
-                        <ReactMarkdown>{promptText}</ReactMarkdown>
+                        {promptText}
                       </div>
                     </div>
                     {/* AI's Response (Left Aligned) */}
                     <div className="flex justify-start mb-2">
                       <div className="bg-green-100 text-green-800 p-3 rounded-lg max-w-[80%]">
                         <strong className="block">AI:</strong>
-                        <ReactMarkdown>{responseText}</ReactMarkdown>
+                        {responseText}
                       </div>
                     </div>
                   </div>
