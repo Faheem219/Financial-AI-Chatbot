@@ -2,7 +2,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import DarkModeSwitch from './DarkModeSwitch';
+import Switch from './Switch';
 
 const Dashboard = () => {
   const { user, logout } = useContext(AuthContext);
@@ -13,14 +13,14 @@ const Dashboard = () => {
     return localStorage.getItem('theme') === 'dark';
   });
 
-  // Whenever darkMode changes, update the HTML class and localStorage.
+  // Function to toggle dark mode
   const toggleDarkMode = () => {
     const newMode = !darkMode;
     setDarkMode(newMode);
     localStorage.setItem('theme', newMode ? 'dark' : 'light');
   };
 
-  // Whenever darkMode changes, update the HTML class and localStorage.
+  // Update the class on the document element based on darkMode state
   useEffect(() => {
     if (darkMode) {
       document.documentElement.classList.add('dark');
@@ -29,7 +29,7 @@ const Dashboard = () => {
     }
   }, [darkMode]);
 
-  // Handle logout and redirect to login.
+  // Handle logout and redirect to login
   const handleLogout = () => {
     logout();
     navigate('/auth/login');
@@ -111,10 +111,10 @@ const Dashboard = () => {
 
       </main>
 
-      {/* Dark Mode Toggle Button */}
+      {/* Dark Mode Toggle Button at Bottom */}
       <div className="absolute bottom-4 right-4 flex items-center">
         <span className="mr-2 font-semibold">Theme</span>
-        <DarkModeSwitch isDarkMode={darkMode} toggleDarkMode={toggleDarkMode} />
+        <Switch isChecked={darkMode} onToggle={toggleDarkMode} />
       </div>
     </div>
   );
