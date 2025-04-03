@@ -1,3 +1,4 @@
+# Backend/api/financial.py
 import requests
 from fastapi import APIRouter, HTTPException
 from core.config import settings
@@ -7,7 +8,6 @@ router = APIRouter()
 @router.get("/market-data")
 async def get_market_data(symbol: str = "AAPL"):
     try:
-        # Example: using Alpha Vantage free API for global quotes.
         api_url = (
             f"{settings.FINANCE_API_URL}/query?function=GLOBAL_QUOTE"
             f"&symbol={symbol}&apikey={settings.FINANCE_API_KEY}"

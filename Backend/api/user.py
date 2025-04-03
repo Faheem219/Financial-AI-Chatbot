@@ -1,17 +1,14 @@
-# /api/user.py
+# Backend/api/user.py
 from fastapi import APIRouter, HTTPException, Depends
 from db.database import get_database
 from models.user import User
 from typing import Optional
-from fastapi.security import OAuth2PasswordBearer
-from core.security import decode_access_token
 from pydantic import BaseModel
 
 router = APIRouter()
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
-
 class UserUpdateRequest(BaseModel):
+    email: str
     income: Optional[float] = None
     expenses: Optional[float] = None
     investment_goals: Optional[str] = None
@@ -20,7 +17,6 @@ class UserUpdateRequest(BaseModel):
 @router.put("/update")
 async def update_user_details(
     request_data: UserUpdateRequest,
-    token: str = Depends(oauth2_scheme),
     db = Depends(get_database)
 ):
     """
@@ -29,16 +25,10 @@ async def update_user_details(
     - expenses
     - investment_goals
     - risk_tolerance
+
+    The request must include the user's email.
     """
-
-    # Decode the token to get the user's email
-    payload = decode_access_token(token)
-    if not payload:
-        raise HTTPException(status_code=401, detail="Invalid token or token expired")
-    email = payload.get("sub")
-    if not email:
-        raise HTTPException(status_code=401, detail="Invalid token or token missing user info")
-
+    email = request_data.email
     user_collection = db.users
     user_data = await user_collection.find_one({"email": email})
     if not user_data:
@@ -62,8 +52,7 @@ async def update_user_details(
     # Fetch the updated user
     updated_user = await user_collection.find_one({"email": email})
 
-    # Return the updated user data 
-    # (Optionally, you can return a Pydantic model. Below is a direct JSON structure.)
+    # Return the updated user data
     return {
         "id": str(updated_user["_id"]),
         "email": updated_user["email"],

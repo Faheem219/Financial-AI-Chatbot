@@ -14,20 +14,15 @@ const Login = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            // 'loginUser' should return something like: 
-            // { access_token, token_type, user: { ... } }
+            // The backend returns the user object directly.
             const data = await loginUser({ email, password });
-
-            // Instead of calling:
-            //    login({ email: data.email, username: data.username }, data.access_token);
-            // We need the full 'user' object from the server's response:
-            login(data.user, data.access_token);
-
+            // Instead of data.user, pass the whole data object.
+            login(data, ''); // Pass an empty token if not used
             navigate('/dashboard');
         } catch (err) {
             setError(err.message);
         }
-    };
+    };    
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-100">

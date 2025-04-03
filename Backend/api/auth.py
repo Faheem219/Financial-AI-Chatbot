@@ -1,10 +1,10 @@
+# Backend/api/auth.py
 from fastapi import APIRouter, HTTPException, Depends
 from models.user import UserCreate, User, UserInDB
-from core.security import get_password_hash, verify_password, create_access_token, ACCESS_TOKEN_EXPIRE_MINUTES
+from core.security import get_password_hash, verify_password
 from db.database import get_database
 from pymongo.errors import DuplicateKeyError
-from fastapi.security import OAuth2PasswordRequestForm
-from datetime import timedelta
+from fastapi import Body
 
 router = APIRouter()
 
@@ -14,12 +14,13 @@ async def signup(user: UserCreate, db = Depends(get_database)):
     hashed_password = get_password_hash(user.password)
     user_data = user.dict()
     user_data["hashed_password"] = hashed_password
+    # Initialize chat history as an empty list
+    user_data["chat_history"] = []
     try:
         result = await user_collection.insert_one(user_data)
     except DuplicateKeyError:
         raise HTTPException(status_code=400, detail="User already exists")
     
-    # Create the UserInDB object and pass the required fields, including income, expenses, etc.
     created_user = UserInDB(
         id=str(result.inserted_id),
         email=user.email,
@@ -29,10 +30,9 @@ async def signup(user: UserCreate, db = Depends(get_database)):
         investment_goals=user.investment_goals,
         risk_tolerance=user.risk_tolerance,
         hashed_password=hashed_password,
-        chat_history=[]  # Initialize chat history as an empty list
+        chat_history=[]
     )
 
-    # Return the User object with all required fields
     return User(
         id=created_user.id,
         email=created_user.email,
@@ -44,37 +44,26 @@ async def signup(user: UserCreate, db = Depends(get_database)):
         chat_history=created_user.chat_history
     )
 
-# /api/auth.py
 @router.post("/login")
-async def login(form_data: OAuth2PasswordRequestForm = Depends(), db = Depends(get_database)):
+async def login(email: str = Body(...), password: str = Body(...), db = Depends(get_database)):
     user_collection = db.users
-    user_data = await user_collection.find_one({"email": form_data.username})
+    user_data = await user_collection.find_one({"email": email})
     if not user_data:
         raise HTTPException(status_code=400, detail="Invalid credentials")
-    if not verify_password(form_data.password, user_data["hashed_password"]):
+    if not verify_password(password, user_data["hashed_password"]):
         raise HTTPException(status_code=400, detail="Invalid credentials")
     
-    # Create token
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(
-        data={"sub": user_data["email"]},
-        expires_delta=access_token_expires
-    )
-
-    # Include user object in the response
-    user_dict = {
-        "id": str(user_data["_id"]),
+    # Convert _id to id and ensure chat_history exists.
+    user_data["id"] = str(user_data["_id"])
+    if "chat_history" not in user_data:
+        user_data["chat_history"] = []
+    
+    return {
         "email": user_data["email"],
         "username": user_data["username"],
-        "income": user_data["income"],
-        "expenses": user_data["expenses"],
-        "investment_goals": user_data["investment_goals"],
-        "risk_tolerance": user_data["risk_tolerance"],
-        "chat_history": user_data.get("chat_history", [])
-    }
-
-    return {
-        "access_token": access_token,
-        "token_type": "bearer",
-        "user": user_dict
+        "income": user_data.get("income", 0),
+        "expenses": user_data.get("expenses", 0),
+        "investment_goals": user_data.get("investment_goals", ""),
+        "risk_tolerance": user_data.get("risk_tolerance", "medium"),
+        "chat_history": user_data["chat_history"]
     }

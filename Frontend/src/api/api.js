@@ -6,12 +6,9 @@ export async function loginUser({ email, password }) {
     const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
+            'Content-Type': 'application/json',
         },
-        body: new URLSearchParams({
-            username: email,
-            password,
-        }),
+        body: JSON.stringify({ email, password }), // Send JSON with correct field names
     });
     if (!response.ok) {
         throw new Error('Login failed');
@@ -34,14 +31,13 @@ export async function signupUser({ email, username, password, income, expenses, 
     return response.json();
 }
 
-export async function getChatbotResponse(prompt, token) {
+export async function getChatbotResponse(email, prompt) {
     const response = await fetch(`${API_BASE_URL}/chatbot/prompt`, {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ prompt }),
+        body: JSON.stringify({ email, prompt }),
     });
     if (!response.ok) {
         throw new Error('Failed to get chatbot response');

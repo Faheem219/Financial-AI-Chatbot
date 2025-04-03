@@ -1,37 +1,39 @@
-// /src/Pages/Chatbot.jsx
-import React, { useState, useContext, useEffect } from 'react';
-import { getChatbotResponse, uploadPdf } from '../api/api';
-import { AuthContext } from '../context/AuthContext';
+import React, { useState, useContext, useEffect } from "react";
+import { getChatbotResponse, uploadPdf } from "../api/api";
+import { AuthContext } from "../context/AuthContext";
 
 const Chatbot = () => {
-  const [prompt, setPrompt] = useState('');
+  const [prompt, setPrompt] = useState("");
   const [chatHistory, setChatHistory] = useState([]);
   const [loading, setLoading] = useState(false);
   const [pdfFile, setPdfFile] = useState(null);
-  const { token } = useContext(AuthContext);
+  const { user } = useContext(AuthContext); // Get user info from context
 
+  // Fetch chat history when the component mounts
   useEffect(() => {
-    // Fetch chat history when the component mounts
     const fetchChatHistory = async () => {
+      if (!user || !user.email) return; // Ensure user is available
       try {
-        const response = await getChatbotResponse('');  // Just an empty prompt to fetch chat history
+        // Pass the user's email along with an empty prompt to fetch chat history
+        const response = await getChatbotResponse(user.email, "");
         setChatHistory(response.history || []);
       } catch (err) {
-        console.error('Failed to fetch chat history:', err);
+        console.error("Failed to fetch chat history:", err);
       }
     };
 
     fetchChatHistory();
-  }, [token]);
+  }, [user]);
 
   const handlePromptSubmit = async (e) => {
     e.preventDefault();
-    if (!prompt) return;
+    if (!prompt || !user || !user.email) return; // Ensure prompt and email are provided
     setLoading(true);
     try {
-      const response = await getChatbotResponse(prompt, token);
+      // Pass the user's email and the prompt correctly to the API
+      const response = await getChatbotResponse(user.email, prompt);
       setChatHistory([...chatHistory, { prompt, response: response.result }]);
-      setPrompt('');
+      setPrompt("");
     } catch (err) {
       console.error(err);
     }
@@ -42,12 +44,12 @@ const Chatbot = () => {
     e.preventDefault();
     if (!pdfFile) return;
     try {
-      await uploadPdf(pdfFile, token);
-      alert('PDF uploaded and processed successfully.');
+      await uploadPdf(pdfFile, ""); // Remove token if not needed here or pass correct token
+      alert("PDF uploaded and processed successfully.");
       setPdfFile(null);
     } catch (err) {
       console.error(err);
-      alert('PDF upload failed.');
+      alert("PDF upload failed.");
     }
   };
 
@@ -65,8 +67,12 @@ const Chatbot = () => {
             ) : (
               chatHistory.map((chat, index) => (
                 <div key={index} className="mb-4">
-                  <p><strong>You:</strong> {chat.prompt}</p>
-                  <p><strong>AI:</strong> {chat.response}</p>
+                  <p>
+                    <strong>You:</strong> {chat.prompt}
+                  </p>
+                  <p>
+                    <strong>AI:</strong> {chat.response}
+                  </p>
                 </div>
               ))
             )}
@@ -84,12 +90,14 @@ const Chatbot = () => {
               className="bg-blue-500 text-white p-2 rounded-r hover:bg-blue-600"
               disabled={loading}
             >
-              {loading ? 'Sending...' : 'Send'}
+              {loading ? "Sending..." : "Send"}
             </button>
           </form>
         </div>
         <div className="bg-white p-4 rounded shadow">
-          <h2 className="text-xl font-semibold mb-4">Upload Financial Statement (PDF)</h2>
+          <h2 className="text-xl font-semibold mb-4">
+            Upload Financial Statement (PDF)
+          </h2>
           <form onSubmit={handlePdfUpload}>
             <input
               type="file"
@@ -97,7 +105,10 @@ const Chatbot = () => {
               onChange={(e) => setPdfFile(e.target.files[0])}
               className="mb-4"
             />
-            <button type="submit" className="bg-green-500 text-white p-2 rounded hover:bg-green-600">
+            <button
+              type="submit"
+              className="bg-green-500 text-white p-2 rounded hover:bg-green-600"
+            >
               Upload PDF
             </button>
           </form>
