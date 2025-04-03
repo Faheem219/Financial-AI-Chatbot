@@ -1,23 +1,27 @@
+// /src/App.jsx
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-// import { AuthProvider } from './context/AuthContext';
-// import { ThemeProvider } from './context/ThemeContext';
-// import Auth from './components/Auth';
-import Dashboard from './Pages/Dashboard';
-import ChatBot from './Pages/Chatbot';
-import Signup from './Pages/Signup';
+import { AuthProvider } from './context/AuthContext';
 import Login from './Pages/Login';
+import Signup from './Pages/Signup';
+import Dashboard from './Pages/Dashboard';
+import Chatbot from './Pages/Chatbot';
+import Auth from './Pages/Auth';
 
 function App() {
   return (
     <AuthProvider>
-      <ThemeProvider>
-        <Router>
-          <Routes>
-            <Route path='/dashboard' element={<Dashboard/>} />
-            <Route path="/" element={<Navigate to="/login" replace />} />
-          </Routes>
-        </Router>
-      </ThemeProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Navigate to="/dashboard" />} />
+          <Route path="/auth" element={<Auth />}>
+            <Route path="login" element={<Login />} />
+            <Route path="signup" element={<Signup />} />
+          </Route>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/chatbot" element={<Chatbot />} />
+        </Routes>
+      </Router>
     </AuthProvider>
   );
 }
