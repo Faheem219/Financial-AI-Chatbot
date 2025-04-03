@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from api import auth, chatbot, financial
+import uvicorn
 
 app = FastAPI(title="AI-Powered Financial Advisory Chatbot API")
 
@@ -26,3 +27,6 @@ app.include_router(financial.router, prefix="/api/financial", tags=["financial"]
 @app.get("/")
 async def root():
     return {"message": "Welcome to the AI-Powered Financial Advisory Chatbot API"}
+
+if __name__ == "__main__":
+    uvicorn.run(app, port=8000)
