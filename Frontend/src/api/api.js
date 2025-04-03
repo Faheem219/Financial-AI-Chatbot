@@ -71,7 +71,7 @@ export async function getMarketData(symbol) {
     return response.json();
 }
 
-// NEW: Update user details
+
 export async function updateUserDetails(income, expenses, investment_goals, risk_tolerance, token) {
     const response = await fetch(`${API_BASE_URL}/user/update`, {
         method: 'PUT',

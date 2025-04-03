@@ -39,11 +39,18 @@ const Dashboard = () => {
     <div className={`min-h-screen p-6 transition-colors duration-300 ${darkMode ? 'bg-gray-800 text-white' : 'bg-gray-100 text-black'}`}>
       {/* Header */}
       <header className={`flex justify-between items-center p-4 shadow mb-6 ${darkMode ? 'bg-gray-900' : 'bg-white'}`}>
+        {/* Left Side */}
         <div className="flex items-center space-x-4">
           <h1 className="text-2xl font-bold">Dashboard</h1>
         </div>
+
+        {/* Center User Name */}
+        <div className="flex-grow text-center">
+          {user && <span className="mr-4 text-xl font-semibold">Welcome, {user.username} !!</span>}
+        </div>
+
+        {/* Right Side - Logout */}
         <div>
-          {user && <span className="mr-4">Welcome, {user.username}</span>}
           <button
             onClick={handleLogout}
             className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition-colors"
@@ -88,12 +95,12 @@ const Dashboard = () => {
         </div>
 
         {/* Chatbot Card */}
-        <div className={`p-6 shadow rounded-md ${darkMode ? 'bg-gray-700' : 'bg-white'}`}>
+        <div className={`p-6 shadow rounded-md ${darkMode ? 'bg-gray-700' : 'bg-white'} flex flex-col justify-center items-center`}>
           <h3 className="font-semibold text-lg mb-4">Chatbot</h3>
-          <p className="mb-6">
+          <p className="mb-6 text-center">
             Need personalized advice? Chat with our AI-powered chatbot to get financial insights, investment suggestions, and more!
           </p>
-          <div className="mt-auto text-center mb-6">
+          <div className="flex-grow flex items-center justify-center">
             <Link
               to="/chatbot"
               className="bg-blue-500 text-white px-6 py-3 rounded hover:bg-blue-600 transition-colors"
