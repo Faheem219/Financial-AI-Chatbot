@@ -18,13 +18,13 @@ export async function loginUser({ email, password }) {
     return response.json();
 }
 
-export async function signupUser({ email, username, password }) {
+export async function signupUser({ email, username, password, income, expenses, investment_goals, risk_tolerance }) {
     const response = await fetch(`${API_BASE_URL}/auth/signup`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, username, password }),
+        body: JSON.stringify({ email, username, password, income, expenses, investment_goals, risk_tolerance }),
     });
     if (!response.ok) {
         throw new Error('Signup failed');

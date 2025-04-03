@@ -1,5 +1,5 @@
 from pydantic import BaseModel, EmailStr
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 
 class UserBase(BaseModel):
     email: EmailStr
@@ -17,8 +17,16 @@ class UserCreate(UserBase):
 class UserInDB(UserBase):
     id: str
     hashed_password: str
+    income: float
+    expenses: float
+    investment_goals: str
+    risk_tolerance: str
     chat_history: List[Tuple[str, str]]  # Add chat history here (list of tuples with prompt and response)
 
 class User(UserBase):
     id: str
+    income: float
+    expenses: float
+    investment_goals: str
+    risk_tolerance: str
     chat_history: List[Tuple[str, str]]  # Add chat history here too

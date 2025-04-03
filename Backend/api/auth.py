@@ -18,6 +18,8 @@ async def signup(user: UserCreate, db = Depends(get_database)):
         result = await user_collection.insert_one(user_data)
     except DuplicateKeyError:
         raise HTTPException(status_code=400, detail="User already exists")
+    
+    # Create the UserInDB object and pass the required fields, including income, expenses, etc.
     created_user = UserInDB(
         id=str(result.inserted_id),
         email=user.email,
@@ -27,10 +29,20 @@ async def signup(user: UserCreate, db = Depends(get_database)):
         investment_goals=user.investment_goals,
         risk_tolerance=user.risk_tolerance,
         hashed_password=hashed_password,
-        chat_history=[]
+        chat_history=[]  # Initialize chat history as an empty list
     )
-    return User(id=created_user.id, email=created_user.email, username=created_user.username)
 
+    # Return the User object with all required fields
+    return User(
+        id=created_user.id,
+        email=created_user.email,
+        username=created_user.username,
+        income=created_user.income,
+        expenses=created_user.expenses,
+        investment_goals=created_user.investment_goals,
+        risk_tolerance=created_user.risk_tolerance,
+        chat_history=created_user.chat_history
+    )
 
 @router.post("/login")
 async def login(form_data: OAuth2PasswordRequestForm = Depends(), db = Depends(get_database)):
