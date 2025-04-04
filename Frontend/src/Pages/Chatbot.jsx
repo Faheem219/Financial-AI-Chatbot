@@ -12,34 +12,33 @@ const Chatbot = () => {
   const { user, token } = useContext(AuthContext);
   const navigate = useNavigate(); // For back button
 
-  // -------- CUSTOM PARSER FOR BOLD & LIST INDENTATION --------
+  // --- CUSTOM PARSER FOR BOLD & LIST INDENTATION ---
   const parseChatText = (text) => {
     if (!text) return "";
 
     // Split text by newlines to process line-by-line
     const lines = text.split("\n");
 
-    // Process each line for bold text and bullet indentation
+    // Process each line for bold text and bullet/number indentation
     const processedLines = lines.map((line) => {
       // Convert **bold** to <strong>bold</strong>
       let replacedLine = line.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
 
-      // If the line starts with a digit+dot+space (e.g., "1. ") or a dash+space ("- "),
-      // wrap it in a <div> with left padding for indentation.
-      if (/^\d+\.\s/.test(line) || /^\-\s/.test(line)) {
+      // Check if the line starts with digit+dot+space (e.g. "1. "),
+      // or dash+space ("- "), or star+space ("* ").
+      // If it does, we wrap it in a <div class="pl-4"> for indentation.
+      if (/^\d+\.\s/.test(line) || /^-\s/.test(line) || /^\*\s/.test(line)) {
         replacedLine = `<div class="pl-4">${replacedLine}</div>`;
       } else {
         replacedLine = `<div>${replacedLine}</div>`;
       }
-
       return replacedLine;
     });
 
     // Join all processed lines into a single HTML string
     return processedLines.join("");
   };
-
-  // -----------------------------------------------------------
+  // ---------------------------------------------------
 
   // Fetch chat history when the component mounts
   useEffect(() => {
