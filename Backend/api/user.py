@@ -19,22 +19,12 @@ async def update_user_details(
     request_data: UserUpdateRequest,
     db = Depends(get_database)
 ):
-    """
-    Update the user's financial details:
-    - income
-    - expenses
-    - investment_goals
-    - risk_tolerance
-
-    The request must include the user's email.
-    """
     email = request_data.email
     user_collection = db.users
     user_data = await user_collection.find_one({"email": email})
     if not user_data:
         raise HTTPException(status_code=404, detail="User not found")
 
-    # Build an update dictionary
     update_fields = {}
     if request_data.income is not None:
         update_fields["income"] = request_data.income
@@ -45,14 +35,11 @@ async def update_user_details(
     if request_data.risk_tolerance is not None:
         update_fields["risk_tolerance"] = request_data.risk_tolerance
 
-    # If we have fields to update, apply them
     if update_fields:
         await user_collection.update_one({"email": email}, {"$set": update_fields})
 
-    # Fetch the updated user
     updated_user = await user_collection.find_one({"email": email})
 
-    # Return the updated user data
     return {
         "id": str(updated_user["_id"]),
         "email": updated_user["email"],

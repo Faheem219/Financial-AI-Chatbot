@@ -14,7 +14,6 @@ async def signup(user: UserCreate, db = Depends(get_database)):
     hashed_password = get_password_hash(user.password)
     user_data = user.dict()
     user_data["hashed_password"] = hashed_password
-    # Initialize chat history as an empty list
     user_data["chat_history"] = []
     try:
         result = await user_collection.insert_one(user_data)
@@ -53,7 +52,6 @@ async def login(email: str = Body(...), password: str = Body(...), db = Depends(
     if not verify_password(password, user_data["hashed_password"]):
         raise HTTPException(status_code=400, detail="Invalid credentials")
     
-    # Convert _id to id and ensure chat_history exists.
     user_data["id"] = str(user_data["_id"])
     if "chat_history" not in user_data:
         user_data["chat_history"] = []
