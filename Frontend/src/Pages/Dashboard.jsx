@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import Switch from './components/Switch';
 import LogButton from './components/LogoutButton';
+import logo from './assets/logo.png'; // Import logo from assets
 
 const Dashboard = () => {
   const { user, logout } = useContext(AuthContext);
@@ -40,8 +41,9 @@ const Dashboard = () => {
     <div className={`min-h-screen p-6 transition-colors duration-300 ${darkMode ? 'bg-gray-800 text-white' : 'bg-gray-100 text-black'}`}>
       {/* Header */}
       <header className={`flex justify-between items-center p-4 shadow-md rounded-lg mb-6 ${darkMode ? 'bg-gray-900' : 'bg-white'}`}>
-        {/* Left Side */}
+        {/* Left Side - Logo */}
         <div className="flex items-center space-x-4">
+          <img src={logo} alt="Logo" className="h-12 w-auto" /> {/* Logo added here */}
           <h1 className="text-3xl font-semibold">Dashboard</h1>
         </div>
 
@@ -111,10 +113,41 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Any Additional Card for Future Use */}
+        {/* Additional Section - Information about the LLM Model */}
         <div className={`p-6 shadow-lg rounded-xl ${darkMode ? 'bg-gray-700' : 'bg-white'} transition-shadow duration-300`}>
-          <h3 className="font-semibold text-lg mb-4">Additional Section</h3>
-          <p>This space can be used for any additional sections you want to add in the future.</p>
+          <h3 className="font-semibold text-lg mb-4">About Our LLM Model</h3>
+          <p className="text-gray-500 mb-4">
+            Our Language Learning Model (LLM) is powered by state-of-the-art AI technology, designed to assist you with personalized financial planning, insights, and risk assessments.
+          </p>
+          <p className="text-gray-500 mb-4">
+            Key Features:
+          </p>
+          <ul className="list-disc pl-5 text-gray-500">
+            <li>Generates personalized financial plans based on user data.</li>
+            <li>Provides real-time market insights and investment suggestions.</li>
+            <li>Performs risk analysis based on financial conditions and goals.</li>
+            <li>Integrates seamlessly with your personal data for highly accurate results.</li>
+          </ul>
+          <p className="text-gray-500 mt-4">
+            Our model uses advanced language understanding to provide answers to complex financial queries, making it an indispensable tool for any user looking to manage their finances effectively.
+          </p>
+        </div>
+
+        {/* Additional Section - Information about the Dataset */}
+        <div className={`p-6 shadow-lg rounded-xl ${darkMode ? 'bg-gray-700' : 'bg-white'} transition-shadow duration-300`}>
+          <h3 className="font-semibold text-lg mb-4">About the Dataset</h3>
+          <p className="text-gray-500 mb-4">
+            The LLM is trained on a diverse and extensive dataset sourced from various financial domains, including:
+          </p>
+          <ul className="list-disc pl-5 text-gray-500 mb-4">
+            <li>Historical stock data from global exchanges.</li>
+            <li>Company earnings reports and financial statements.</li>
+            <li>Market analysis and financial research papers.</li>
+            <li>Financial advisory content and investment strategies.</li>
+          </ul>
+          <p className="text-gray-500">
+            This comprehensive dataset enables the model to provide highly accurate, data-driven financial insights, predictions, and recommendations tailored to each user's financial situation.
+          </p>
         </div>
 
       </main>
