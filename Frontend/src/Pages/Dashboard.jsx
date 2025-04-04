@@ -64,7 +64,7 @@ const Dashboard = () => {
       </header>
 
       {/* Main Section */}
-      <main className="container mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <main className="container mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify">
 
         {/* User Details Card */}
         <div className={`p-6 shadow-lg rounded-xl ${darkMode ? 'bg-gray-700' : 'bg-white'} transition-shadow duration-300`}>
@@ -112,8 +112,20 @@ const Dashboard = () => {
             </Link>
           </div>
         </div>
+        <div className={`p-6 shadow-lg rounded-xl ${darkMode ? 'bg-gray-700' : 'bg-white'} flex flex-col justify-center items-center transition-shadow duration-300`}>
+          <h3 className="font-semibold text-lg mb-4">Stay tuned!!</h3>
+          <p className="mb-6 text-center">
+            Stay tuned for more features and updates coming soon! We are constantly working to enhance your experience and provide you with the best financial advisory services.
+          </p>
+          <div className="flex-grow flex items-center justify-center">
+          </div>
+        </div>
 
-        {/* Additional Section - Information about the LLM Model */}
+      </main>
+
+      {/* LLM and Dataset Information Cards (Horizontal Layout) */}
+      <section className="container mx-auto mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
+        {/* About Our LLM Model Card */}
         <div className={`p-6 shadow-lg rounded-xl ${darkMode ? 'bg-gray-700' : 'bg-white'} transition-shadow duration-300`}>
           <h3 className="font-semibold text-lg mb-4">About Our LLM Model</h3>
           <p className="text-gray-500 mb-4">
@@ -133,7 +145,7 @@ const Dashboard = () => {
           </p>
         </div>
 
-        {/* Additional Section - Information about the Dataset */}
+        {/* About the Dataset Card */}
         <div className={`p-6 shadow-lg rounded-xl ${darkMode ? 'bg-gray-700' : 'bg-white'} transition-shadow duration-300`}>
           <h3 className="font-semibold text-lg mb-4">About the Dataset</h3>
           <p className="text-gray-500 mb-4">
@@ -149,8 +161,7 @@ const Dashboard = () => {
             This comprehensive dataset enables the model to provide highly accurate, data-driven financial insights, predictions, and recommendations tailored to each user's financial situation.
           </p>
         </div>
-
-      </main>
+      </section>
 
       {/* Dark Mode Toggle Button at Bottom */}
       <div className="absolute bottom-6 right-6 flex items-center">
