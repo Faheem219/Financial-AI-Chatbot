@@ -3,7 +3,6 @@ import React, { useState, useContext, useEffect } from "react";
 import { getChatbotResponse, uploadPdf } from "../api/api";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import ReactMarkdown from "react-markdown"; // Import react-markdown
 
 const Chatbot = () => {
   const [prompt, setPrompt] = useState("");
@@ -12,6 +11,35 @@ const Chatbot = () => {
   const [pdfFile, setPdfFile] = useState(null);
   const { user, token } = useContext(AuthContext);
   const navigate = useNavigate(); // For back button
+
+  // -------- CUSTOM PARSER FOR BOLD & LIST INDENTATION --------
+  const parseChatText = (text) => {
+    if (!text) return "";
+
+    // Split text by newlines to process line-by-line
+    const lines = text.split("\n");
+
+    // Process each line for bold text and bullet indentation
+    const processedLines = lines.map((line) => {
+      // Convert **bold** to <strong>bold</strong>
+      let replacedLine = line.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+
+      // If the line starts with a digit+dot+space (e.g., "1. ") or a dash+space ("- "),
+      // wrap it in a <div> with left padding for indentation.
+      if (/^\d+\.\s/.test(line) || /^\-\s/.test(line)) {
+        replacedLine = `<div class="pl-4">${replacedLine}</div>`;
+      } else {
+        replacedLine = `<div>${replacedLine}</div>`;
+      }
+
+      return replacedLine;
+    });
+
+    // Join all processed lines into a single HTML string
+    return processedLines.join("");
+  };
+
+  // -----------------------------------------------------------
 
   // Fetch chat history when the component mounts
   useEffect(() => {
@@ -61,6 +89,7 @@ const Chatbot = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
+      {/* Header with Back Button */}
       <header className="flex items-center justify-between mb-6">
         <button
           onClick={handleBackClick}
@@ -88,17 +117,17 @@ const Chatbot = () => {
                   <div key={index} className="mb-4">
                     {/* User's Message (Right Aligned) */}
                     <div className="flex justify-end mb-2">
-                      <div className="bg-blue-100 text-blue-800 p-3 rounded-lg max-w-[80%]">
-                        <strong className="block">You:</strong>
-                        {promptText}
-                      </div>
+                      <div
+                        className="bg-blue-100 text-blue-800 p-3 rounded-lg max-w-[80%]"
+                        dangerouslySetInnerHTML={{ __html: parseChatText(promptText) }}
+                      />
                     </div>
                     {/* AI's Response (Left Aligned) */}
                     <div className="flex justify-start mb-2">
-                      <div className="bg-green-100 text-green-800 p-3 rounded-lg max-w-[80%]">
-                        <strong className="block">AI:</strong>
-                        {responseText}
-                      </div>
+                      <div
+                        className="bg-green-100 text-green-800 p-3 rounded-lg max-w-[80%]"
+                        dangerouslySetInnerHTML={{ __html: parseChatText(responseText) }}
+                      />
                     </div>
                   </div>
                 );
