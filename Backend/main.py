@@ -1,11 +1,8 @@
 # main.py
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from api import auth, chatbot, financial
+from api import auth, chatbot, financial, user
 import uvicorn
-
-# NEW - import your user router
-from api import user
 
 app = FastAPI(title="AI-Powered Financial Advisory Chatbot API")
 
@@ -22,7 +19,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Include API routers
 app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
 app.include_router(chatbot.router, prefix="/api/chatbot", tags=["chatbot"])
 app.include_router(financial.router, prefix="/api/financial", tags=["financial"])

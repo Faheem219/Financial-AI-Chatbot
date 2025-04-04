@@ -89,7 +89,7 @@ const Signup = () => {
             className="inputField"
             value={income}
             onChange={(e) => setIncome(e.target.value)}
-            placeholder="Income"
+            placeholder="Income (In INR, Monthly)"
             required
           />
         </div>
@@ -102,7 +102,7 @@ const Signup = () => {
             className="inputField"
             value={expenses}
             onChange={(e) => setExpenses(e.target.value)}
-            placeholder="Expenses"
+            placeholder="Expenses (In INR, Monthly)"
             required
           />
         </div>

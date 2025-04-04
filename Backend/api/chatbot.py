@@ -10,7 +10,6 @@ from pydantic import BaseModel
 
 router = APIRouter()
 
-# Instead of token-based auth, we now simply expect an "email" field.
 class PromptRequest(BaseModel):
     email: str
     prompt: str
@@ -20,7 +19,6 @@ async def get_user_by_email(email: str, db):
     user_data = await user_collection.find_one({"email": email})
     if not user_data:
         raise HTTPException(status_code=401, detail="User not found")
-    # Convert _id to id and ensure chat_history exists.
     user_data["id"] = str(user_data["_id"])
     if "chat_history" not in user_data:
         user_data["chat_history"] = []
@@ -37,7 +35,6 @@ async def chatbot_prompt(request: PromptRequest, db = Depends(get_database)):
             print("[DEBUG] chatbot_prompt: Empty prompt, returning chat history.")
             return {"history": user.chat_history or []}
 
-        # Process the prompt
         response = await process_prompt(db, request.prompt, request.email)
         print("[DEBUG] chatbot_prompt: Received response:", response)
 
@@ -58,14 +55,13 @@ async def chatbot_prompt(request: PromptRequest, db = Depends(get_database)):
 @router.post("/upload-pdf")
 async def upload_pdf(
     file: UploadFile = File(...),
-    email: str = Form(...),   # Ensure email is obtained from the form data
+    email: str = Form(...), 
     db = Depends(get_database)
 ):
     try:
         filename = f"temp_{uuid4().hex}.pdf"
         with open(filename, "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
-        # Pass the email to process_document so that the user's pdf docs are updated.
         await process_document(filename, db, email)
         os.remove(filename)
         return {"detail": "PDF processed successfully"}

@@ -21,7 +21,7 @@ class UserInDB(UserBase):
     expenses: float
     investment_goals: str
     risk_tolerance: str
-    chat_history: List[Tuple[str, str]]  # Add chat history here (list of tuples with prompt and response)
+    chat_history: List[Tuple[str, str]] 
 
 class User(UserBase):
     id: str
@@ -29,4 +29,4 @@ class User(UserBase):
     expenses: float
     investment_goals: str
     risk_tolerance: str
-    chat_history: List[Tuple[str, str]]  # Add chat history here too
+    chat_history: List[Tuple[str, str]]
