@@ -72,7 +72,7 @@ export async function getMarketData(symbol) {
 }
 
 
-export async function updateUserDetails(income, expenses, investment_goals, risk_tolerance, token) {
+export async function updateUserDetails(income, expenses, investment_goals, risk_tolerance, token, email) {
     const response = await fetch(`${API_BASE_URL}/user/update`, {
         method: 'PUT',
         headers: {
@@ -80,6 +80,7 @@ export async function updateUserDetails(income, expenses, investment_goals, risk
             Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
+            email, // include the user's email
             income,
             expenses,
             investment_goals,

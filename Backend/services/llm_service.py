@@ -109,12 +109,13 @@ def fetch_latest_financial_data() -> str:
 
 async def load_user_data(db, email: str) -> list:
     """
-    Load only the data for the specified user.
+    Load only the data for the specified user, including their chat history.
     """
     corpus = []
     user = await db.users.find_one({"email": email})
     if user:
         text = (
+            f"User Data:\n"
             f"User ID: {user.get('user_id', '')}\n"
             f"Income: {user.get('income', 0)}\n"
             f"Expenses: {user.get('expenses', 0)}\n"
@@ -124,7 +125,19 @@ async def load_user_data(db, email: str) -> list:
             f"Email: {user.get('email', '')}\n"
         )
         corpus.append(text)
-    # Optionally, you may still want to append global market data.
+        # Optionally, include the chat history if available:
+        if "chat_history" in user and user["chat_history"]:
+            # Convert each chat entry (which might be stored as a list or tuple)
+            for entry in user["chat_history"]:
+                # Assuming each entry is of the form [prompt, response] or a dict
+                if isinstance(entry, (list, tuple)) and len(entry) == 2:
+                    chat_text = f"User: {entry[0]}\nAI: {entry[1]}"
+                elif isinstance(entry, dict):
+                    chat_text = f"User: {entry.get('prompt', '')}\nAI: {entry.get('response', '')}"
+                else:
+                    chat_text = str(entry)
+                corpus.append(chat_text)
+    # Append global market data if desired.
     market_data = fetch_latest_financial_data()
     corpus.append(market_data)
     return corpus
