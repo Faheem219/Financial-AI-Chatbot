@@ -91,7 +91,7 @@ def init_llm():
         provider="hf-inference",
         api_key=huggingface_api_token,
         max_tokens=1000,
-        temperature=0.05
+        temperature=0.1
     )
     os.environ.pop("HUGGINGFACEHUB_API_TOKEN", None)
     embeddings = HuggingFaceEmbeddings(
