@@ -2,7 +2,8 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import Switch from './Switch';
+import Switch from './components/Switch';
+import LogButton from './components/LogoutButton';
 
 const Dashboard = () => {
   const { user, logout } = useContext(AuthContext);
@@ -51,12 +52,12 @@ const Dashboard = () => {
 
         {/* Right Side - Logout */}
         <div>
-          <button
+          <LogButton
             onClick={handleLogout}
             className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition-colors"
           >
             Logout
-          </button>
+          </LogButton>
         </div>
       </header>
 

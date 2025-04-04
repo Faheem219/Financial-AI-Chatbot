@@ -8,6 +8,7 @@ import Dashboard from './Pages/Dashboard';
 import Chatbot from './Pages/Chatbot';
 import Auth from './Pages/Auth';
 import EditDetails from './Pages/EditDetails';
+import Landingpage from './Pages/Landingpage';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/chatbot" element={<Chatbot />} />
           <Route path="/edit-details" element={<EditDetails />} />
+          <Route path="/landingpage" element={<Landingpage />} />
         </Routes>
       </Router>
     </AuthProvider>
