@@ -39,22 +39,22 @@ const Dashboard = () => {
   return (
     <div className={`min-h-screen p-6 transition-colors duration-300 ${darkMode ? 'bg-gray-800 text-white' : 'bg-gray-100 text-black'}`}>
       {/* Header */}
-      <header className={`flex justify-between items-center p-4 shadow mb-6 ${darkMode ? 'bg-gray-900' : 'bg-white'}`}>
+      <header className={`flex justify-between items-center p-4 shadow-md rounded-lg mb-6 ${darkMode ? 'bg-gray-900' : 'bg-white'}`}>
         {/* Left Side */}
         <div className="flex items-center space-x-4">
-          <h1 className="text-2xl font-bold">Dashboard</h1>
+          <h1 className="text-3xl font-semibold">Dashboard</h1>
         </div>
 
         {/* Center User Name */}
         <div className="flex-grow text-center">
-          {user && <span className="mr-4 text-xl font-semibold">Welcome, {user.username} !!</span>}
+          {user && <span className="text-xl font-semibold">Welcome, {user.username}!</span>}
         </div>
 
         {/* Right Side - Logout */}
         <div>
           <LogButton
             onClick={handleLogout}
-            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition-colors"
+            className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors"
           >
             Logout
           </LogButton>
@@ -62,10 +62,10 @@ const Dashboard = () => {
       </header>
 
       {/* Main Section */}
-      <main className="container mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <main className="container mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
 
         {/* User Details Card */}
-        <div className={`p-6 shadow rounded-md ${darkMode ? 'bg-gray-700' : 'bg-white'}`}>
+        <div className={`p-6 shadow-lg rounded-xl ${darkMode ? 'bg-gray-700' : 'bg-white'} transition-shadow duration-300`}>
           <h3 className="font-semibold text-lg mb-4">Your Personal Details</h3>
           <div className="space-y-4">
             <div className="flex justify-between items-center">
@@ -88,7 +88,7 @@ const Dashboard = () => {
           <div className="mt-8 text-center">
             <Link
               to="/edit-details"
-              className="bg-green-500 text-white px-6 py-3 rounded hover:bg-green-600 transition-colors"
+              className="bg-green-500 text-white px-6 py-3 rounded-md hover:bg-green-600 transition-colors"
             >
               Edit Details
             </Link>
@@ -96,7 +96,7 @@ const Dashboard = () => {
         </div>
 
         {/* Chatbot Card */}
-        <div className={`p-6 shadow rounded-md ${darkMode ? 'bg-gray-700' : 'bg-white'} flex flex-col justify-center items-center`}>
+        <div className={`p-6 shadow-lg rounded-xl ${darkMode ? 'bg-gray-700' : 'bg-white'} flex flex-col justify-center items-center transition-shadow duration-300`}>
           <h3 className="font-semibold text-lg mb-4">Chatbot</h3>
           <p className="mb-6 text-center">
             Need personalized advice? Chat with our AI-powered chatbot to get financial insights, investment suggestions, and more!
@@ -104,7 +104,7 @@ const Dashboard = () => {
           <div className="flex-grow flex items-center justify-center">
             <Link
               to="/chatbot"
-              className="bg-blue-500 text-white px-6 py-3 rounded hover:bg-blue-600 transition-colors"
+              className="bg-[rgb(127,96,219)] text-white px-6 py-3 rounded-md hover:bg-[rgb(112,75,185)] transition-colors"
             >
               Go to Chatbot
             </Link>
@@ -112,7 +112,7 @@ const Dashboard = () => {
         </div>
 
         {/* Any Additional Card for Future Use */}
-        <div className={`p-6 shadow rounded-md ${darkMode ? 'bg-gray-700' : 'bg-white'}`}>
+        <div className={`p-6 shadow-lg rounded-xl ${darkMode ? 'bg-gray-700' : 'bg-white'} transition-shadow duration-300`}>
           <h3 className="font-semibold text-lg mb-4">Additional Section</h3>
           <p>This space can be used for any additional sections you want to add in the future.</p>
         </div>
@@ -120,7 +120,7 @@ const Dashboard = () => {
       </main>
 
       {/* Dark Mode Toggle Button at Bottom */}
-      <div className="absolute bottom-4 right-4 flex items-center">
+      <div className="absolute bottom-6 right-6 flex items-center">
         <span className="mr-2 font-semibold">Theme</span>
         <Switch isChecked={darkMode} onToggle={toggleDarkMode} />
       </div>
