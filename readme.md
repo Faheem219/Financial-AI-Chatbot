@@ -29,11 +29,11 @@ This hackathon project is built to empower **young professionals in India** with
 | Layer        | Tech Used                                                                 |
 |--------------|---------------------------------------------------------------------------|
 | 🖼️ Frontend   | React (Vite), TailwindCSS                                                |
-| ⚙️ Backend     | FastAPI                                                                  |
+| ⚙️ Backend    | FastAPI                                                                  |
 | 💾 Database   | MongoDB                                                                  |
 | 🧠 LLM        | Google Gemini API via `google.generativeai`                              |
 | 🧠 RAG        | Chroma Vector DB + LangChain + Torch                                     |
-| 📊 Data Tools | Pandas, PyPDF2, Transformers, Matplotlib                                 |
+| 📊 Data Tools | Pandas, PyPDF2, Transformers                                             |
 
 ---
 
@@ -70,7 +70,7 @@ This hackathon project is built to empower **young professionals in India** with
     │   └── user.py
     ├── services
     │   ├── llm_service.py
-    │   └── pdf_processor.py
+    │   └── llm_gemini_service.py
     └── main.py
 ```
 
