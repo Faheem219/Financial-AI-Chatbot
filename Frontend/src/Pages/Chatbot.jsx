@@ -104,28 +104,36 @@ const Chatbot = () => {
       <main className="container mx-auto max-w-3xl bg-white p-6 rounded-lg shadow-lg">
         {/* Chatbot Section */}
         <div className="mb-6">
-          <h2 className="text-2xl font-semibold text-gray-700 mb-4">Chat with our AI</h2>
+          <h2 className="text-2xl font-semibold text-gray-700 mb-4">
+            Chat with our AI
+          </h2>
           <div className="max-h-[50vh] overflow-y-auto p-4 border rounded-lg bg-gray-50 shadow-inner space-y-4">
             {chatHistory.length === 0 ? (
               <p className="text-gray-500 text-center">No conversation yet.</p>
             ) : (
               chatHistory.map((chat, index) => {
                 const promptText = Array.isArray(chat) ? chat[0] : chat.prompt;
-                const responseText = Array.isArray(chat) ? chat[1] : chat.response;
+                const responseText = Array.isArray(chat)
+                  ? chat[1]
+                  : chat.response;
                 return (
                   <div key={index} className="mb-4">
                     {/* User's Message (Right Aligned) */}
                     <div className="flex justify-end mb-2">
                       <div
                         className="bg-blue-100 text-blue-800 p-3 rounded-lg max-w-[80%]"
-                        dangerouslySetInnerHTML={{ __html: parseChatText(promptText) }}
+                        dangerouslySetInnerHTML={{
+                          __html: parseChatText(promptText),
+                        }}
                       />
                     </div>
                     {/* AI's Response (Left Aligned) */}
                     <div className="flex justify-start mb-2">
                       <div
                         className="bg-green-100 text-green-800 p-3 rounded-lg max-w-[80%]"
-                        dangerouslySetInnerHTML={{ __html: parseChatText(responseText) }}
+                        dangerouslySetInnerHTML={{
+                          __html: parseChatText(responseText),
+                        }}
                       />
                     </div>
                   </div>
@@ -136,12 +144,16 @@ const Chatbot = () => {
 
           {/* Prompt Submission */}
           <form onSubmit={handlePromptSubmit} className="flex mt-4 space-x-2">
-            <input
-              type="text"
+            <textarea
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
-              className="flex-grow p-3 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="flex-grow p-3 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none overflow-hidden"
               placeholder="Type your question..."
+              rows="1"
+              onInput={(e) => {
+                e.target.style.height = "auto";
+                e.target.style.height = e.target.scrollHeight + "px";
+              }}
             />
             <button
               type="submit"

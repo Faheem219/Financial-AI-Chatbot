@@ -9,28 +9,29 @@ from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.vectorstores import Chroma
 from langchain.llms.base import LLM
 from dotenv import load_dotenv
-from huggingface_hub import InferenceClient
 from pydantic import Field
 from core.config import settings
 
 # Load environment variables
 load_dotenv()
-huggingface_api_token = settings.HUGGINGFACE_USER_ACCESS_TOKEN
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")  # Ensure your .env file has GEMINI_API_KEY
 DEVICE = "cuda:0" if torch.cuda.is_available() else "cpu"
 
-# Maintain per-user data in dictionaries:
+# Dictionaries for per-user data:
 pdf_docs_dict = {}      # key: email, value: list of processed PDF documents
 retrieval_chains = {}    # key: email, value: the RetrievalQA chain for that user
 vector_docs = {}         # key: email, value: the combined list of documents used for retrieval
 
-llm_hub = None
+llm_gemini = None
 embeddings = None
 
-class TogetherInferenceLLM(LLM):
+# Import the Gemini client from google.genai
+from google import genai
+
+class GeminiLLM(LLM):
     model_name: str = Field(...)
-    max_tokens: int = Field(default=500)
-    temperature: float = Field(default=0.1)
-    provider: str = Field(...)
+    max_tokens: int = Field(default=500)  # This parameter may be used by the API if supported.
+    temperature: float = Field(default=0.1)  # Likewise, if supported.
     api_key: str = Field(...)
     system_prompt: str = Field(
         default=(
@@ -51,31 +52,25 @@ class TogetherInferenceLLM(LLM):
             "Do not include any disclaimers stating that you are not a financial advisor (e.g., 'Disclaimer: I am an AI assistant and this is not financial advice. Please consult with a qualified financial advisor before making any investment decisions.')."
         )
     )
-    client: InferenceClient = None
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.client = InferenceClient(provider=self.provider, api_key=self.api_key)
+
+    def _call(self, prompt: str, stop: Optional[List[str]] = None) -> str:
+        # Combine the system prompt and the user prompt.
+        combined_prompt = f"{self.system_prompt}\nUser: {prompt}"
+        # Initialize the Gemini client using the provided API key.
+        client = genai.Client(api_key=self.api_key)
+        try:
+            response = client.models.generate_content(
+                model=self.model_name,
+                contents=combined_prompt
+            )
+            return response.text
+        except Exception as e:
+            return f"Error during Gemini API call: {str(e)}"
 
     @property
     def _llm_type(self) -> str:
-        return "hf_inference_llm"
-
-    def _call(self, prompt: str, stop: Optional[List[str]] = None) -> str:
-        messages = [
-            {"role": "system", "content": self.system_prompt},
-            {"role": "user", "content": prompt}
-        ]
-        completion = self.client.chat.completions.create(
-            model=self.model_name,
-            messages=messages,
-            max_tokens=self.max_tokens,
-        )
-        msg = completion.choices[0].message
-        if isinstance(msg, dict):
-            return msg.get("content", "")
-        else:
-            return msg
+        return "gemini_llm"
 
     @property
     def _identifying_params(self) -> dict:
@@ -87,23 +82,21 @@ class TogetherInferenceLLM(LLM):
         }
 
 def init_llm():
-    global llm_hub, embeddings
-    os.environ["HUGGINGFACEHUB_API_TOKEN"] = huggingface_api_token
-    llm_hub = TogetherInferenceLLM(
-        model_name="meta-llama/Llama-3.2-3B-Instruct",
-        provider="hf-inference",    # together or hf_inference
-        api_key=huggingface_api_token,
+    global llm_gemini, embeddings
+    os.environ["GEMINI_API_KEY"] = GEMINI_API_KEY
+    llm_gemini = GeminiLLM(
+        model_name="gemini-2.5-pro-exp-03-25",  # gemini-2.0-flash
+        api_key=GEMINI_API_KEY,
         max_tokens=1000,
         temperature=0.1
     )
-    os.environ.pop("HUGGINGFACEHUB_API_TOKEN", None)
+    os.environ.pop("GEMINI_API_KEY", None)
     embeddings = HuggingFaceEmbeddings(
         model_name="sentence-transformers/all-MiniLM-L6-v2",
         model_kwargs={"device": DEVICE}
     )
 
 def fetch_latest_financial_data() -> str:
-    # Start with a header for the latest financial market data.
     combined_text = "Latest Financial Market Data:\n"
     symbols = ["NSE:NIFTY50", "NSE:BANKNIFTY", "NSE:SENSEX"]
     for symbol in symbols:
@@ -139,8 +132,7 @@ def load_csv_from_dir(path: str) -> str:
         if csv_files:
             file_path = os.path.join(path, csv_files[0])
             df = pd.read_csv(file_path)
-            # Limit to the first 50 rows to reduce token count.
-            sample_df = df.head(50)
+            sample_df = df.head(50)  # Limit rows to reduce token count.
             return sample_df.to_csv(index=False)
     except Exception as e:
         return f"Error loading CSV from {path}: {str(e)}"
@@ -191,7 +183,6 @@ async def load_user_data(db, email: str) -> list:
             f"Email: {user.get('email', '')}\n"
         )
         corpus.append(text)
-
         if "chat_history" in user and user["chat_history"]:
             for entry in user["chat_history"]:
                 if isinstance(entry, (list, tuple)) and len(entry) == 2:
@@ -201,12 +192,10 @@ async def load_user_data(db, email: str) -> list:
                 else:
                     chat_text = str(entry)
                 corpus.append(chat_text)
-
-    # Append the latest market data (which already includes a header).
+    # Append the latest market data (with header).
     market_data = fetch_latest_financial_data()
     corpus.append(market_data)
-
-    # Append historical data with category headers.
+    # Append historical market data for each category with headers.
     historical_data = fetch_historical_data()
     for key, data in historical_data.items():
         corpus.append(f"Historical Market Data - {key.title()}:\n{data}")
@@ -218,20 +207,20 @@ async def build_retrieval_chain(db, email: str):
     db_docs = [Document(page_content=txt) for txt in docs]
     user_pdf_docs = pdf_docs_dict.get(email, [])
     combined_docs = db_docs + user_pdf_docs if user_pdf_docs else db_docs
-    
+
     vector_docs[email] = combined_docs
-    
+
     # Debug print: show all documents being used in the vector store for this user.
     print(f"Combined documents for user {email}:")
     for doc in combined_docs:
         print(doc.page_content)
-    
+
     db_vector = Chroma.from_documents(combined_docs, embedding=embeddings)
     retrieval_chains[email] = RetrievalQA.from_chain_type(
-        llm=llm_hub,
+        llm=llm_gemini,
         chain_type="stuff",
         retriever=db_vector.as_retriever(
-            search_type="mmr", search_kwargs={'k': 6, 'lambda_mult': 0.25}
+            search_type="mmr", search_kwargs={'k': 12, 'lambda_mult': 0.25}
         ),
         return_source_documents=False
     )
@@ -243,11 +232,9 @@ async def process_document(document_path: str, db, email: str):
     documents = loader.load()
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=1024, chunk_overlap=64)
     new_pdf_docs = text_splitter.split_documents(documents)
-    
-    # Prepend header string to indicate the document type.
+    # Prepend header indicating the document type.
     for doc in new_pdf_docs:
         doc.page_content = "User's Bank Account Statement Data\n" + doc.page_content
-    
     pdf_docs_dict[email] = pdf_docs_dict.get(email, []) + new_pdf_docs
     await build_retrieval_chain(db, email)
 
@@ -258,10 +245,10 @@ async def process_prompt(db, prompt: str, email: str) -> str:
         print(f"Using vector database documents for user {email}:")
         for doc in vector_docs[email]:
             print(doc.page_content)
-    
     loop = asyncio.get_running_loop()
     output = await loop.run_in_executor(None, retrieval_chains[email], {"query": prompt})
     answer = output.get("result", "")
     return answer
 
+# Initialize the Gemini LLM and embeddings.
 init_llm()

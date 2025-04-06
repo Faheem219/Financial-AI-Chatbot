@@ -3,7 +3,7 @@ from fastapi import APIRouter, HTTPException, Depends, UploadFile, File, Form
 from uuid import uuid4
 import shutil
 import os
-from services.llm_service import process_prompt, process_document
+from services.llm_gemini_service import process_prompt, process_document
 from db.database import get_database
 from models.user import UserInDB
 from pydantic import BaseModel

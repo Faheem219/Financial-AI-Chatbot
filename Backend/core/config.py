@@ -7,6 +7,7 @@ class Settings(BaseSettings):
     HUGGINGFACE_USER_ACCESS_TOKEN: str
     FINANCE_API_KEY: str
     FINANCE_API_URL: str
+    GEMINI_API_KEY: str
     
     class Config:
         env_file = ".env"
